@@ -161,22 +161,31 @@ class ChatterboxMultilingualTTS:
     def from_local(cls, ckpt_dir, device) -> 'ChatterboxMultilingualTTS':
         ckpt_dir = Path(ckpt_dir)
 
+
+        kwargs = {}
+        if device == "cpu":
+            kwargs["map_location"] = torch.device('cpu')
+
+
         ve = VoiceEncoder()
         ve.load_state_dict(
-            torch.load(ckpt_dir / "ve.pt", weights_only=True)
+            torch.load(ckpt_dir / "ve.pt", weights_only=True, **kwargs)
         )
         ve.to(device).eval()
 
+
         t3 = T3(T3Config.multilingual())
-        t3_state = load_safetensors(ckpt_dir / "t3_mtl23ls_v2.safetensors")
+        t3_state = load_safetensors(ckpt_dir / "t3_mtl23ls_v2.safetensors", device=device)
         if "model" in t3_state.keys():
             t3_state = t3_state["model"][0]
         t3.load_state_dict(t3_state)
         t3.to(device).eval()
 
+
+
         s3gen = S3Gen()
         s3gen.load_state_dict(
-            torch.load(ckpt_dir / "s3gen.pt", weights_only=True)
+            torch.load(ckpt_dir / "s3gen.pt", weights_only=True, **kwargs)
         )
         s3gen.to(device).eval()
 
@@ -184,23 +193,45 @@ class ChatterboxMultilingualTTS:
             str(ckpt_dir / "grapheme_mtl_merged_expanded_v1.json")
         )
 
+
         conds = None
         if (builtin_voice := ckpt_dir / "conds.pt").exists():
-            conds = Conditionals.load(builtin_voice).to(device)
+            conds = Conditionals.load(builtin_voice, map_location=kwargs.get("map_location", "cpu")).to(device)
 
         return cls(t3, s3gen, ve, tokenizer, device, conds=conds)
 
     @classmethod
     def from_pretrained(cls, device: torch.device) -> 'ChatterboxMultilingualTTS':
-        ckpt_dir = Path(
-            snapshot_download(
-                repo_id=REPO_ID,
-                repo_type="model",
-                revision="main", 
-                allow_patterns=["ve.pt", "t3_mtl23ls_v2.safetensors", "s3gen.pt", "grapheme_mtl_merged_expanded_v1.json", "conds.pt", "Cangjie5_TC.json"],
-                token=os.getenv("HF_TOKEN"),
+
+        # Check for local "pretrained_models" directory first (relative to project root)
+        project_root = Path(__file__).parents[2]
+        local_model_dir = project_root / "pretrained_models" / "multilingual"
+        
+        if local_model_dir.exists() and (local_model_dir / "t3_mtl23ls_v2.safetensors").exists():
+             print(f"Loading multilingual models from local directory: {local_model_dir}")
+             return cls.from_local(local_model_dir, device)
+
+        try:
+            ckpt_dir = Path(
+                snapshot_download(
+                    repo_id=REPO_ID,
+                    repo_type="model",
+                    revision="main", 
+                    allow_patterns=["ve.pt", "t3_mtl23ls_v2.safetensors", "s3gen.pt", "grapheme_mtl_merged_expanded_v1.json", "conds.pt", "Cangjie5_TC.json"],
+                    token=os.getenv("HF_TOKEN"),
+                    local_files_only=True
+                )
             )
-        )
+        except Exception:
+            ckpt_dir = Path(
+                snapshot_download(
+                    repo_id=REPO_ID,
+                    repo_type="model",
+                    revision="main", 
+                    allow_patterns=["ve.pt", "t3_mtl23ls_v2.safetensors", "s3gen.pt", "grapheme_mtl_merged_expanded_v1.json", "conds.pt", "Cangjie5_TC.json"],
+                    token=os.getenv("HF_TOKEN"),
+                )
+            )
         return cls.from_local(ckpt_dir, device)
     
     def prepare_conditionals(self, wav_fpath, exaggeration=0.5):

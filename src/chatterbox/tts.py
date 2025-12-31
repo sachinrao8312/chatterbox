@@ -174,8 +174,23 @@ class ChatterboxTTS:
                 print("MPS not available because the current MacOS version is not 12.3+ and/or you do not have an MPS-enabled device on this machine.")
             device = "cpu"
 
-        for fpath in ["ve.safetensors", "t3_cfg.safetensors", "s3gen.safetensors", "tokenizer.json", "conds.pt"]:
-            local_path = hf_hub_download(repo_id=REPO_ID, filename=fpath)
+
+        # Check for local "pretrained_models" directory first (relative to project root)
+        # src/chatterbox/tts.py -> ../../../pretrained_models/standard
+        project_root = Path(__file__).parents[2]
+        local_model_dir = project_root / "pretrained_models" / "standard"
+        
+        if local_model_dir.exists() and (local_model_dir / "t3_cfg.safetensors").exists():
+             print(f"Loading models from local directory: {local_model_dir}")
+             return cls.from_local(local_model_dir, device)
+
+        files = ["ve.safetensors", "t3_cfg.safetensors", "s3gen.safetensors", "tokenizer.json", "conds.pt"]
+        try:
+            for fpath in files:
+                local_path = hf_hub_download(repo_id=REPO_ID, filename=fpath, local_files_only=True)
+        except Exception:
+            for fpath in files:
+                local_path = hf_hub_download(repo_id=REPO_ID, filename=fpath)
 
         return cls.from_local(Path(local_path).parent, device)
 

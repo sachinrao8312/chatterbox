@@ -192,12 +192,28 @@ class ChatterboxTurboTTS:
                 print("MPS not available because the current MacOS version is not 12.3+ and/or you do not have an MPS-enabled device on this machine.")
             device = "cpu"
 
-        local_path = snapshot_download(
-            repo_id=REPO_ID,
-            token=os.getenv("HF_TOKEN") or True,
-            # Optional: Filter to download only what you need
-            allow_patterns=["*.safetensors", "*.json", "*.txt", "*.pt", "*.model"]
-        )
+
+        # Check for local "pretrained_models" directory first (relative to project root)
+        project_root = Path(__file__).parents[2]
+        local_model_dir = project_root / "pretrained_models" / "turbo"
+        
+        if local_model_dir.exists() and (local_model_dir / "t3_turbo_v1.safetensors").exists():
+             print(f"Loading turbo models from local directory: {local_model_dir}")
+             return cls.from_local(local_model_dir, device)
+
+        try:
+            local_path = snapshot_download(
+                repo_id=REPO_ID,
+                token=os.getenv("HF_TOKEN") or True,
+                allow_patterns=["*.safetensors", "*.json", "*.txt", "*.pt", "*.model"],
+                local_files_only=True
+            )
+        except Exception:
+            local_path = snapshot_download(
+                repo_id=REPO_ID,
+                token=os.getenv("HF_TOKEN") or True,
+                allow_patterns=["*.safetensors", "*.json", "*.txt", "*.pt", "*.model"]
+            )
 
         return cls.from_local(local_path, device)
 
