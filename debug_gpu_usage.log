@@ -1,0 +1,408 @@
+
+============================================================
+🎯 CUDA CORES USAGE CHECK
+============================================================
+CUDA Available: True
+✅ GPU Device: NVIDIA GeForce RTX 5060 Ti
+   CUDA Version: 12.8
+   Pre-Gen Memory Allocated: 3075.77 MB
+   Pre-Gen Memory Reserved: 5150.00 MB
+   Model Device: cuda
+   T3 Model Device: cuda:0
+   S3Gen Model Device: cuda:0
+   VoiceEncoder Device: cuda:0
+============================================================
+
+============================================================
+🚀 CUDA GENERATION COMPLETE
+============================================================
+   GPU Kernel Time: 6108.62 ms
+   Post-Gen Memory Allocated: 3397.70 MB
+   Post-Gen Memory Reserved: 5480.00 MB
+   Peak Memory Used: 5120.41 MB
+============================================================
+
+
+============================================================
+🎯 CUDA CORES USAGE CHECK
+============================================================
+CUDA Available: True
+✅ GPU Device: NVIDIA GeForce RTX 5060 Ti
+   CUDA Version: 12.8
+   Pre-Gen Memory Allocated: 3397.70 MB
+   Pre-Gen Memory Reserved: 5480.00 MB
+   Model Device: cuda
+   T3 Model Device: cuda:0
+   S3Gen Model Device: cuda:0
+   VoiceEncoder Device: cuda:0
+============================================================
+
+============================================================
+🚀 CUDA GENERATION COMPLETE
+============================================================
+   GPU Kernel Time: 3765.12 ms
+   Post-Gen Memory Allocated: 3398.49 MB
+   Post-Gen Memory Reserved: 5526.00 MB
+   Peak Memory Used: 5120.41 MB
+============================================================
+
+
+============================================================
+🎯 CUDA CORES USAGE CHECK
+============================================================
+CUDA Available: True
+✅ GPU Device: NVIDIA GeForce RTX 5060 Ti
+   CUDA Version: 12.8
+   Pre-Gen Memory Allocated: 3398.49 MB
+   Pre-Gen Memory Reserved: 5526.00 MB
+   Model Device: cuda
+   T3 Model Device: cuda:0
+   S3Gen Model Device: cuda:0
+   VoiceEncoder Device: cuda:0
+============================================================
+
+============================================================
+🚀 CUDA GENERATION COMPLETE
+============================================================
+   GPU Kernel Time: 4330.47 ms
+   Post-Gen Memory Allocated: 3399.30 MB
+   Post-Gen Memory Reserved: 5526.00 MB
+   Peak Memory Used: 5120.41 MB
+============================================================
+
+
+============================================================
+🎯 CUDA CORES USAGE CHECK
+============================================================
+CUDA Available: True
+✅ GPU Device: NVIDIA GeForce RTX 5060 Ti
+   CUDA Version: 12.8
+   Pre-Gen Memory Allocated: 3399.30 MB
+   Pre-Gen Memory Reserved: 5526.00 MB
+   Model Device: cuda
+   T3 Model Device: cuda:0
+   S3Gen Model Device: cuda:0
+   VoiceEncoder Device: cuda:0
+============================================================
+
+============================================================
+🚀 CUDA GENERATION COMPLETE
+============================================================
+   GPU Kernel Time: 5036.20 ms
+   Post-Gen Memory Allocated: 3397.92 MB
+   Post-Gen Memory Reserved: 5576.00 MB
+   Peak Memory Used: 5120.41 MB
+============================================================
+
+
+============================================================
+🎯 CUDA CORES USAGE CHECK
+============================================================
+CUDA Available: True
+✅ GPU Device: NVIDIA GeForce RTX 5060 Ti
+   CUDA Version: 12.8
+   Pre-Gen Memory Allocated: 3397.92 MB
+   Pre-Gen Memory Reserved: 5576.00 MB
+   Model Device: cuda
+   T3 Model Device: cuda:0
+   S3Gen Model Device: cuda:0
+   VoiceEncoder Device: cuda:0
+============================================================
+
+============================================================
+🚀 CUDA GENERATION COMPLETE
+============================================================
+   GPU Kernel Time: 4181.43 ms
+   Post-Gen Memory Allocated: 3402.49 MB
+   Post-Gen Memory Reserved: 5576.00 MB
+   Peak Memory Used: 5120.41 MB
+============================================================
+
+
+============================================================
+🎯 CUDA CORES USAGE CHECK
+============================================================
+CUDA Available: True
+✅ GPU Device: NVIDIA GeForce RTX 5060 Ti
+   CUDA Version: 12.8
+   Pre-Gen Memory Allocated: 3402.49 MB
+   Pre-Gen Memory Reserved: 5576.00 MB
+   Model Device: cuda
+   T3 Model Device: cuda:0
+   S3Gen Model Device: cuda:0
+   VoiceEncoder Device: cuda:0
+============================================================
+
+============================================================
+🚀 CUDA GENERATION COMPLETE
+============================================================
+   GPU Kernel Time: 3763.78 ms
+   Post-Gen Memory Allocated: 3399.61 MB
+   Post-Gen Memory Reserved: 5576.00 MB
+   Peak Memory Used: 5120.41 MB
+============================================================
+
+
+============================================================
+🎯 CUDA CORES USAGE CHECK
+============================================================
+CUDA Available: True
+✅ GPU Device: NVIDIA GeForce RTX 5060 Ti
+   CUDA Version: 12.8
+   Pre-Gen Memory Allocated: 3399.61 MB
+   Pre-Gen Memory Reserved: 5576.00 MB
+   Model Device: cuda
+   T3 Model Device: cuda:0
+   S3Gen Model Device: cuda:0
+   VoiceEncoder Device: cuda:0
+============================================================
+
+============================================================
+🚀 CUDA GENERATION COMPLETE
+============================================================
+   GPU Kernel Time: 2556.81 ms
+   Post-Gen Memory Allocated: 3403.83 MB
+   Post-Gen Memory Reserved: 5576.00 MB
+   Peak Memory Used: 5120.41 MB
+============================================================
+
+
+============================================================
+🎯 CUDA CORES USAGE CHECK
+============================================================
+CUDA Available: True
+✅ GPU Device: NVIDIA GeForce RTX 5060 Ti
+   CUDA Version: 12.8
+   Pre-Gen Memory Allocated: 3403.83 MB
+   Pre-Gen Memory Reserved: 5576.00 MB
+   Model Device: cuda
+   T3 Model Device: cuda:0
+   S3Gen Model Device: cuda:0
+   VoiceEncoder Device: cuda:0
+============================================================
+
+============================================================
+🚀 CUDA GENERATION COMPLETE
+============================================================
+   GPU Kernel Time: 3347.41 ms
+   Post-Gen Memory Allocated: 3399.61 MB
+   Post-Gen Memory Reserved: 5576.00 MB
+   Peak Memory Used: 5120.41 MB
+============================================================
+
+
+============================================================
+🎯 CUDA CORES USAGE CHECK
+============================================================
+CUDA Available: True
+✅ GPU Device: NVIDIA GeForce RTX 5060 Ti
+   CUDA Version: 12.8
+   Pre-Gen Memory Allocated: 3399.61 MB
+   Pre-Gen Memory Reserved: 5576.00 MB
+   Model Device: cuda
+   T3 Model Device: cuda:0
+   S3Gen Model Device: cuda:0
+   VoiceEncoder Device: cuda:0
+============================================================
+
+============================================================
+🚀 CUDA GENERATION COMPLETE
+============================================================
+   GPU Kernel Time: 4361.30 ms
+   Post-Gen Memory Allocated: 3403.51 MB
+   Post-Gen Memory Reserved: 5602.00 MB
+   Peak Memory Used: 5120.41 MB
+============================================================
+
+
+============================================================
+🎯 CUDA CORES USAGE CHECK
+============================================================
+CUDA Available: True
+✅ GPU Device: NVIDIA GeForce RTX 5060 Ti
+   CUDA Version: 12.8
+   Pre-Gen Memory Allocated: 3403.51 MB
+   Pre-Gen Memory Reserved: 5602.00 MB
+   Model Device: cuda
+   T3 Model Device: cuda:0
+   S3Gen Model Device: cuda:0
+   VoiceEncoder Device: cuda:0
+============================================================
+
+============================================================
+🚀 CUDA GENERATION COMPLETE
+============================================================
+   GPU Kernel Time: 3418.31 ms
+   Post-Gen Memory Allocated: 3400.76 MB
+   Post-Gen Memory Reserved: 5604.00 MB
+   Peak Memory Used: 5120.41 MB
+============================================================
+
+
+============================================================
+🎯 CUDA CORES USAGE CHECK
+============================================================
+CUDA Available: True
+✅ GPU Device: NVIDIA GeForce RTX 5060 Ti
+   CUDA Version: 12.8
+   Pre-Gen Memory Allocated: 3400.76 MB
+   Pre-Gen Memory Reserved: 5604.00 MB
+   Model Device: cuda
+   T3 Model Device: cuda:0
+   S3Gen Model Device: cuda:0
+   VoiceEncoder Device: cuda:0
+============================================================
+
+============================================================
+🚀 CUDA GENERATION COMPLETE
+============================================================
+   GPU Kernel Time: 3646.68 ms
+   Post-Gen Memory Allocated: 3402.98 MB
+   Post-Gen Memory Reserved: 5604.00 MB
+   Peak Memory Used: 5120.41 MB
+============================================================
+
+
+============================================================
+🎯 CUDA CORES USAGE CHECK
+============================================================
+CUDA Available: True
+✅ GPU Device: NVIDIA GeForce RTX 5060 Ti
+   CUDA Version: 12.8
+   Pre-Gen Memory Allocated: 3402.98 MB
+   Pre-Gen Memory Reserved: 5604.00 MB
+   Model Device: cuda
+   T3 Model Device: cuda:0
+   S3Gen Model Device: cuda:0
+   VoiceEncoder Device: cuda:0
+============================================================
+
+============================================================
+🚀 CUDA GENERATION COMPLETE
+============================================================
+   GPU Kernel Time: 2547.62 ms
+   Post-Gen Memory Allocated: 3403.04 MB
+   Post-Gen Memory Reserved: 5604.00 MB
+   Peak Memory Used: 5120.41 MB
+============================================================
+
+
+============================================================
+🎯 CUDA CORES USAGE CHECK
+============================================================
+CUDA Available: True
+✅ GPU Device: NVIDIA GeForce RTX 5060 Ti
+   CUDA Version: 12.8
+   Pre-Gen Memory Allocated: 3403.04 MB
+   Pre-Gen Memory Reserved: 5604.00 MB
+   Model Device: cuda
+   T3 Model Device: cuda:0
+   S3Gen Model Device: cuda:0
+   VoiceEncoder Device: cuda:0
+============================================================
+
+============================================================
+🚀 CUDA GENERATION COMPLETE
+============================================================
+   GPU Kernel Time: 2236.30 ms
+   Post-Gen Memory Allocated: 3402.65 MB
+   Post-Gen Memory Reserved: 5604.00 MB
+   Peak Memory Used: 5120.41 MB
+============================================================
+
+
+============================================================
+🎯 CUDA CORES USAGE CHECK
+============================================================
+CUDA Available: True
+✅ GPU Device: NVIDIA GeForce RTX 5060 Ti
+   CUDA Version: 12.8
+   Pre-Gen Memory Allocated: 3402.65 MB
+   Pre-Gen Memory Reserved: 5604.00 MB
+   Model Device: cuda
+   T3 Model Device: cuda:0
+   S3Gen Model Device: cuda:0
+   VoiceEncoder Device: cuda:0
+============================================================
+
+============================================================
+🚀 CUDA GENERATION COMPLETE
+============================================================
+   GPU Kernel Time: 12280.24 ms
+   Post-Gen Memory Allocated: 3269.74 MB
+   Post-Gen Memory Reserved: 5900.00 MB
+   Peak Memory Used: 5120.41 MB
+============================================================
+
+
+============================================================
+🎯 CUDA CORES USAGE CHECK
+============================================================
+CUDA Available: True
+✅ GPU Device: NVIDIA GeForce RTX 5060 Ti
+   CUDA Version: 12.8
+   Pre-Gen Memory Allocated: 3269.74 MB
+   Pre-Gen Memory Reserved: 5900.00 MB
+   Model Device: cuda
+   T3 Model Device: cuda:0
+   S3Gen Model Device: cuda:0
+   VoiceEncoder Device: cuda:0
+============================================================
+
+============================================================
+🚀 CUDA GENERATION COMPLETE
+============================================================
+   GPU Kernel Time: 5312.32 ms
+   Post-Gen Memory Allocated: 3402.28 MB
+   Post-Gen Memory Reserved: 5900.00 MB
+   Peak Memory Used: 5120.41 MB
+============================================================
+
+
+============================================================
+🎯 CUDA CORES USAGE CHECK
+============================================================
+CUDA Available: True
+✅ GPU Device: NVIDIA GeForce RTX 5060 Ti
+   CUDA Version: 12.8
+   Pre-Gen Memory Allocated: 3402.28 MB
+   Pre-Gen Memory Reserved: 5900.00 MB
+   Model Device: cuda
+   T3 Model Device: cuda:0
+   S3Gen Model Device: cuda:0
+   VoiceEncoder Device: cuda:0
+============================================================
+
+============================================================
+🚀 CUDA GENERATION COMPLETE
+============================================================
+   GPU Kernel Time: 9365.87 ms
+   Post-Gen Memory Allocated: 3400.84 MB
+   Post-Gen Memory Reserved: 6100.00 MB
+   Peak Memory Used: 5120.41 MB
+============================================================
+
+
+============================================================
+🎯 CUDA CORES USAGE CHECK
+============================================================
+CUDA Available: True
+✅ GPU Device: NVIDIA GeForce RTX 5060 Ti
+   CUDA Version: 12.8
+   Pre-Gen Memory Allocated: 3400.84 MB
+   Pre-Gen Memory Reserved: 6100.00 MB
+   Model Device: cuda
+   T3 Model Device: cuda:0
+   S3Gen Model Device: cuda:0
+   VoiceEncoder Device: cuda:0
+============================================================
+
+============================================================
+🚀 CUDA GENERATION COMPLETE
+============================================================
+   GPU Kernel Time: 8515.69 ms
+   Post-Gen Memory Allocated: 3402.96 MB
+   Post-Gen Memory Reserved: 6100.00 MB
+   Peak Memory Used: 5120.41 MB
+============================================================
+

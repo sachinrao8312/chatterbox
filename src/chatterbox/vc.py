@@ -1,6 +1,8 @@
 from pathlib import Path
 
+
 import librosa
+import numpy as np
 import torch
 import perth
 from huggingface_hub import hf_hub_download
@@ -89,7 +91,9 @@ class ChatterboxVC:
 
     def set_target_voice(self, wav_fpath):
         ## Load reference wav
+
         s3gen_ref_wav, _sr = librosa.load(wav_fpath, sr=S3GEN_SR)
+        s3gen_ref_wav = s3gen_ref_wav.astype(np.float32)
 
         s3gen_ref_wav = s3gen_ref_wav[:self.DEC_COND_LEN]
         self.ref_dict = self.s3gen.embed_ref(s3gen_ref_wav, S3GEN_SR, device=self.device)

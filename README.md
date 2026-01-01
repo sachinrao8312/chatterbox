@@ -142,6 +142,25 @@ print(f"Extracted watermark: {watermark}")
 ```
 
 
+## Desktop Application & New Features (v2 Update)
+
+We have introduced a unified **Desktop Dashboard** to manage your Chatterbox experience easily.
+
+### 🚀 How to Launch
+- **Windows (Command Prompt):** Double-click `Launch_App.bat` or the desktop shortcut.
+- **Windows (Git Bash/MinGW):** Run `./run.sh` to avoid path issues.
+
+### ✨ New Features
+1.  **Unified Dashboard:** Switch between **Turbo**, **Standard**, and **Multilingual** modes instantly without restarting the app.
+2.  **Settings & Auto-Save:** Click the **⚙️ Settings** icon to choose an output folder. All generated audio is automatically saved there with timestamps.
+3.  **Real-time Progress:** Visual progress bars show loading, generation, and saving status.
+4.  **GPU Acceleration:** The app now automatically detects and forces **CUDA (NVIDIA GPU)** usage for significantly faster performance and lower RAM usage.
+   - *Check the terminal on launch for the "✅ CUDA Available" banner.*
+
+### 🛠️ Troubleshooting
+- **"Connection Blocked" Error:** We have switched to native navigation to bypass browser security blocks on localhost. Current versions should not see this error.
+- **High RAM Usage:** Ensure you are using the GPU-enabled version. The app prints diagnostics on startup. If it says "Using CPU", please reinstall PyTorch with CUDA support.
+
 ## Official Discord
 
 👋 Join us on [Discord](https://discord.gg/rJq9cRJBJ6) and let's build something awesome together!

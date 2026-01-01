@@ -3,9 +3,23 @@ import numpy as np
 import torch
 from chatterbox.mtl_tts import ChatterboxMultilingualTTS, SUPPORTED_LANGUAGES
 import gradio as gr
+import audio_saver
 
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-print(f"🚀 Running on device: {DEVICE}")
+
+print("="*50)
+print(f"Diagnostics: Python {random.__file__}") # Just to see path
+if torch.cuda.is_available():
+    print(f"✅ CUDA Available! Found {torch.cuda.device_count()} device(s).")
+    print(f"   Current Device: {torch.cuda.get_device_name(0)}")
+    print(f"   CUDA Version: {torch.version.cuda}")
+    DEVICE = "cuda"
+else:
+    print("⚠️ CUDA NOT Available. Using CPU (High RAM usage expected).")
+    print(f"   Torch Version: {torch.__version__}")
+    DEVICE = "cpu"
+print("="*50)
+
+# NOTE: We avoid torch.set_default_device("cuda") to allow CPU operations for UI/Audio
 
 # --- Global Model Initialization ---
 MODEL = None
@@ -175,6 +189,8 @@ def resolve_audio_prompt(language_id: str, provided_path: str | None) -> str | N
     return LANGUAGE_CONFIG.get(language_id, {}).get("audio")
 
 
+import audio_saver
+
 def generate_tts_audio(
     text_input: str,
     language_id: str,
@@ -182,7 +198,8 @@ def generate_tts_audio(
     exaggeration_input: float = 0.5,
     temperature_input: float = 0.8,
     seed_num_input: int = 0,
-    cfgw_input: float = 0.5
+    cfgw_input: float = 0.5,
+    progress=gr.Progress()
 ) -> tuple[int, np.ndarray]:
     """
     Generate high-quality speech audio from text using Chatterbox Multilingual model with optional reference audio styling.
@@ -213,6 +230,7 @@ def generate_tts_audio(
         set_seed(int(seed_num_input))
 
     print(f"Generating audio for text: '{text_input[:50]}...'")
+    progress(0.1, "Analyzing Text...")
     
     # Handle optional audio prompt
     chosen_prompt = audio_prompt_path_input or default_audio_for_ui(language_id)
@@ -228,13 +246,118 @@ def generate_tts_audio(
     else:
         print("No audio prompt provided; using default voice.")
         
+    progress(0.3, "Synthesizing Speech...")
+    
+    # --- GPU ENFORCEMENT & DIAGNOSTICS ---
+    debug_msg = []
+    debug_msg.append(f"\n{'='*60}")
+    debug_msg.append(f"🎯 CUDA CORES USAGE CHECK")
+    debug_msg.append(f"{'='*60}")
+    debug_msg.append(f"CUDA Available: {torch.cuda.is_available()}")
+    
+    if torch.cuda.is_available():
+        try:
+            # Synchronize to get accurate memory readings
+            torch.cuda.synchronize()
+            
+            debug_msg.append(f"✅ GPU Device: {torch.cuda.get_device_name(0)}")
+            debug_msg.append(f"   CUDA Version: {torch.version.cuda}")
+            debug_msg.append(f"   Pre-Gen Memory Allocated: {torch.cuda.memory_allocated()/1024**2:.2f} MB")
+            debug_msg.append(f"   Pre-Gen Memory Reserved: {torch.cuda.memory_reserved()/1024**2:.2f} MB")
+            debug_msg.append(f"   Model Device: {getattr(current_model, 'device', 'unknown')}")
+            
+            # Verify all model components are on CUDA
+            if hasattr(current_model, 't3'):
+                t3_device = next(current_model.t3.parameters()).device
+                debug_msg.append(f"   T3 Model Device: {t3_device}")
+                if str(t3_device) != "cuda:0" and "cuda" not in str(t3_device):
+                    debug_msg.append(f"   ⚠️ WARNING: T3 is NOT on CUDA!")
+            if hasattr(current_model, 's3gen'):
+                s3gen_device = next(current_model.s3gen.parameters()).device
+                debug_msg.append(f"   S3Gen Model Device: {s3gen_device}")
+            if hasattr(current_model, 've'):
+                ve_device = next(current_model.ve.parameters()).device
+                debug_msg.append(f"   VoiceEncoder Device: {ve_device}")
+        except Exception as cuda_err:
+            debug_msg.append(f"⚠️ CUDA diagnostic error: {cuda_err}")
+            # Try to reset CUDA state
+            try:
+                torch.cuda.empty_cache()
+            except:
+                pass
+    else:
+        debug_msg.append("❌ CUDA IS NOT AVAILABLE! Generation will use CPU (very slow).")
+        debug_msg.append(f"   Torch Version: {torch.__version__}")
+    
+    debug_msg.append(f"{'='*60}")
+    
+    with open("debug_gpu_usage.log", "a", encoding="utf-8") as f:
+        f.write("\n".join(debug_msg) + "\n")
+    
+    for msg in debug_msg:
+        print(f"   [GPU] {msg}")
+    # -----------------
+
+    # Record start time for GPU kernel execution timing
+    start_event = None
+    end_event = None
+    if torch.cuda.is_available():
+        try:
+            start_event = torch.cuda.Event(enable_timing=True)
+            end_event = torch.cuda.Event(enable_timing=True)
+            start_event.record()
+        except Exception as e:
+            print(f"   [GPU] Warning: Could not create CUDA events: {e}")
+
     wav = current_model.generate(
         text_input[:300],  # Truncate text to max chars
         language_id=language_id,
         **generate_kwargs
     )
+    
+    # --- GPU POST-GENERATION DIAGNOSTICS ---
+    if torch.cuda.is_available():
+        try:
+            if end_event is not None:
+                end_event.record()
+                torch.cuda.synchronize()  # Wait for all CUDA operations to complete
+                
+                gpu_time_ms = start_event.elapsed_time(end_event)
+                post_mem_alloc = torch.cuda.memory_allocated()/1024**2
+                post_mem_reserved = torch.cuda.memory_reserved()/1024**2
+                peak_mem = torch.cuda.max_memory_allocated()/1024**2
+                
+                post_debug = [
+                    f"\n{'='*60}",
+                    f"🚀 CUDA GENERATION COMPLETE",
+                    f"{'='*60}",
+                    f"   GPU Kernel Time: {gpu_time_ms:.2f} ms",
+                    f"   Post-Gen Memory Allocated: {post_mem_alloc:.2f} MB",
+                    f"   Post-Gen Memory Reserved: {post_mem_reserved:.2f} MB",
+                    f"   Peak Memory Used: {peak_mem:.2f} MB",
+                    f"{'='*60}\n"
+                ]
+                
+                for msg in post_debug:
+                    print(f"   [GPU] {msg}")
+                
+                with open("debug_gpu_usage.log", "a", encoding="utf-8") as f:
+                    f.write("\n".join(post_debug) + "\n")
+        except Exception as cuda_err:
+            print(f"   [GPU] Post-generation diagnostic error: {cuda_err}")
+            # Try to clear CUDA cache to recover from error state
+            try:
+                torch.cuda.empty_cache()
+            except:
+                pass
+    # -----------------
     print("Audio generation complete.")
-    return (current_model.sr, wav.squeeze(0).numpy())
+    progress(0.9, "Saving...")
+    
+    audio_data = wav.squeeze(0).numpy()
+    audio_saver.save_audio_output(current_model.sr, audio_data, f"Multi_{language_id}")
+    
+    return (current_model.sr, audio_data)
 
 with gr.Blocks() as demo:
     gr.Markdown(

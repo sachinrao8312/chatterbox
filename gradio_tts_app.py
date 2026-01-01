@@ -3,9 +3,23 @@ import numpy as np
 import torch
 import gradio as gr
 from chatterbox.tts import ChatterboxTTS
+import audio_saver
 
 
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+print("="*50)
+print(f"Diagnostics: Python {random.__file__}") # Just to see path
+if torch.cuda.is_available():
+    print(f"✅ CUDA Available! Found {torch.cuda.device_count()} device(s).")
+    print(f"   Current Device: {torch.cuda.get_device_name(0)}")
+    print(f"   CUDA Version: {torch.version.cuda}")
+    DEVICE = "cuda"
+else:
+    print("⚠️ CUDA NOT Available. Using CPU (High RAM usage expected).")
+    print(f"   Torch Version: {torch.__version__}")
+    DEVICE = "cpu"
+print("="*50)
+
+# NOTE: We avoid torch.set_default_device("cuda") to allow CPU operations for UI/Audio
 
 
 def set_seed(seed: int):
@@ -21,13 +35,44 @@ def load_model():
     return model
 
 
-def generate(model, text, audio_prompt_path, exaggeration, temperature, seed_num, cfgw, min_p, top_p, repetition_penalty):
+import audio_saver
+
+def generate(model, text, audio_prompt_path, exaggeration, temperature, seed_num, cfgw, min_p, top_p, repetition_penalty, progress=gr.Progress()):
     if model is None:
+        progress(0, "Loading Model...")
         model = ChatterboxTTS.from_pretrained(DEVICE)
 
     if seed_num != 0:
         set_seed(int(seed_num))
 
+    progress(0.2, "Generating...")
+    
+    # --- GPU ENFORCEMENT & DIAGNOSTICS ---
+    print(f"\n{'='*60}")
+    print(f"🎯 CUDA CORES USAGE CHECK (Standard TTS)")
+    print(f"{'='*60}")
+    print(f"CUDA Available: {torch.cuda.is_available()}")
+    
+    if torch.cuda.is_available():
+        torch.cuda.synchronize()
+        print(f"✅ GPU Device: {torch.cuda.get_device_name(0)}")
+        print(f"   Pre-Gen Memory Allocated: {torch.cuda.memory_allocated()/1024**2:.2f} MB")
+        print(f"   Model Device: {getattr(model, 'device', 'unknown')}")
+        if hasattr(model, 't3'):
+            print(f"   T3 Model Device: {next(model.t3.parameters()).device}")
+        if hasattr(model, 's3gen'):
+            print(f"   S3Gen Model Device: {next(model.s3gen.parameters()).device}")
+    else:
+        print("❌ CUDA IS NOT AVAILABLE! Generation will use CPU (very slow).")
+    print(f"{'='*60}")
+    
+    # GPU timing
+    if torch.cuda.is_available():
+        start_event = torch.cuda.Event(enable_timing=True)
+        end_event = torch.cuda.Event(enable_timing=True)
+        start_event.record()
+    # -----------------
+    
     wav = model.generate(
         text,
         audio_prompt_path=audio_prompt_path,
@@ -38,7 +83,26 @@ def generate(model, text, audio_prompt_path, exaggeration, temperature, seed_num
         top_p=top_p,
         repetition_penalty=repetition_penalty,
     )
-    return (model.sr, wav.squeeze(0).numpy())
+    
+    # --- GPU POST-GENERATION DIAGNOSTICS ---
+    if torch.cuda.is_available():
+        end_event.record()
+        torch.cuda.synchronize()
+        gpu_time_ms = start_event.elapsed_time(end_event)
+        print(f"\n{'='*60}")
+        print(f"🚀 CUDA GENERATION COMPLETE (Standard TTS)")
+        print(f"{'='*60}")
+        print(f"   GPU Kernel Time: {gpu_time_ms:.2f} ms")
+        print(f"   Post-Gen Memory: {torch.cuda.memory_allocated()/1024**2:.2f} MB")
+        print(f"   Peak Memory: {torch.cuda.max_memory_allocated()/1024**2:.2f} MB")
+        print(f"{'='*60}\n")
+    # -----------------
+    
+    progress(0.9, "Saving...")
+    audio_data = wav.squeeze(0).numpy()
+    audio_saver.save_audio_output(model.sr, audio_data, "Standard")
+    
+    return (model.sr, audio_data)
 
 
 with gr.Blocks() as demo:

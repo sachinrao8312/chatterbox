@@ -2,7 +2,9 @@ from dataclasses import dataclass
 from pathlib import Path
 import os
 
+
 import librosa
+import numpy as np
 import torch
 import perth
 import torch.nn.functional as F
@@ -236,11 +238,15 @@ class ChatterboxMultilingualTTS:
     
     def prepare_conditionals(self, wav_fpath, exaggeration=0.5):
         ## Load reference wav
+
         s3gen_ref_wav, _sr = librosa.load(wav_fpath, sr=S3GEN_SR)
+        s3gen_ref_wav = s3gen_ref_wav.astype(np.float32)
 
         ref_16k_wav = librosa.resample(s3gen_ref_wav, orig_sr=S3GEN_SR, target_sr=S3_SR)
+        ref_16k_wav = ref_16k_wav.astype(np.float32)
 
         s3gen_ref_wav = s3gen_ref_wav[:self.DEC_COND_LEN]
+
         s3gen_ref_dict = self.s3gen.embed_ref(s3gen_ref_wav, S3GEN_SR, device=self.device)
 
         # Speech cond prompt tokens

@@ -1,81 +1,85 @@
-"""
-Create Desktop Shortcuts for Chatterbox TTS
-Run this script to create desktop shortcuts for all TTS modes.
-"""
 
 import os
 import sys
+import subprocess
+from PIL import Image
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 DESKTOP = os.path.join(os.path.expanduser("~"), "Desktop")
+ICON_PNG = os.path.join(SCRIPT_DIR, "app_icon.png")
+ICON_ICO = os.path.join(SCRIPT_DIR, "app_icon.ico")
+APP_SCRIPT = "desktop_app.py"
 
+def find_pythonw():
+    """Find PythonW executable in venv"""
+    venv_pythonw = os.path.join(SCRIPT_DIR, ".venv", "Scripts", "pythonw.exe")
+    if os.path.exists(venv_pythonw):
+        return venv_pythonw
+    return sys.executable.replace("python.exe", "pythonw.exe")
 
-def find_python():
-    """Find Python executable, prefer venv"""
-    venv_python = os.path.join(SCRIPT_DIR, ".venv", "Scripts", "pythonw.exe")
-    if os.path.exists(venv_python):
-        return venv_python
-    pythonw = sys.executable.replace("python.exe", "pythonw.exe")
-    if os.path.exists(pythonw):
-        return pythonw
-    return sys.executable
-
-
-def create_vbs_shortcut(name, mode):
-    """Create a VBS launcher script on desktop"""
-    python_exe = find_python()
-    app_script = os.path.join(SCRIPT_DIR, "desktop_app.py")
-    vbs_path = os.path.join(DESKTOP, f"{name}.vbs")
-    
-    vbs_content = f'''Set WshShell = CreateObject("WScript.Shell")
-WshShell.CurrentDirectory = "{SCRIPT_DIR}"
-WshShell.Run """{python_exe}"" ""{app_script}"" {mode}", 0, False
-'''
-    
+def convert_icon():
+    """Convert PNG to ICO"""
+    if not os.path.exists(ICON_PNG):
+        print(f"❌ Source icon not found: {ICON_PNG}")
+        return False
+        
     try:
-        with open(vbs_path, 'w') as f:
-            f.write(vbs_content)
+        img = Image.open(ICON_PNG)
+        # Create sizes for the icon
+        img.save(ICON_ICO, format='ICO', sizes=[(256, 256)])
+        print(f"✅ Created icon: {ICON_ICO}")
         return True
     except Exception as e:
-        print(f"   ❌ Failed: {e}")
+        print(f"❌ Failed to convert icon: {e}")
         return False
 
+def create_shortcut_ps(name):
+    """Create a .lnk shortcut using PowerShell"""
+    pythonw = find_pythonw()
+    shortcut_path = os.path.join(DESKTOP, f"{name}.lnk")
+    
+    # PowerShell script to create shortcut
+    # Note: quoted paths to handle spaces
+    ps_script = f"""
+    $WshShell = New-Object -comObject WScript.Shell
+    $Shortcut = $WshShell.CreateShortcut("{shortcut_path}")
+    $Shortcut.TargetPath = "{pythonw}"
+    $Shortcut.Arguments = "{APP_SCRIPT}"
+    $Shortcut.WorkingDirectory = "{SCRIPT_DIR}"
+    $Shortcut.IconLocation = "{ICON_ICO}"
+    $Shortcut.Save()
+    """
+    
+    try:
+        cmd = ["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", ps_script]
+        subprocess.run(cmd, check=True, capture_output=True, text=True)
+        return True
+    except subprocess.CalledProcessError as e:
+        print(f"❌ PowerShell failed: {e.stderr}")
+        return False
+    except Exception as e:
+        print(f"❌ Failed to create shortcut: {e}")
+        return False
 
 def main():
-    print()
-    print("=" * 55)
-    print("  🎙️ Chatterbox TTS - Desktop Shortcut Creator")
-    print("=" * 55)
-    print()
+    print("=" * 50)
+    print(" 🎨 Chatterbox Shortcut Creator")
+    print("=" * 50)
     
-    shortcuts = [
-        ("Chatterbox TTS (Turbo)", "turbo"),
-        ("Chatterbox TTS (Standard)", "standard"),
-        ("Chatterbox TTS (Multilingual)", "multilingual"),
-    ]
+    # 1. Convert Icon
+    if not convert_icon():
+        return
+        
+    # 2. Create Shortcut
+    name = "Chatterbox AI"
+    print(f"Creating shortcut '{name}' on Desktop...")
     
-    created = 0
-    
-    for name, mode in shortcuts:
-        print(f"  Creating: {name}...", end=" ")
-        if create_vbs_shortcut(name, mode):
-            print("✅")
-            created += 1
-        else:
-            print("❌")
-    
-    print()
-    print("-" * 55)
-    print(f"  ✨ Created {created}/{len(shortcuts)} shortcuts on Desktop!")
-    print()
-    print("  📁 Shortcuts created:")
-    for name, mode in shortcuts:
-        print(f"     • {name}")
-    print()
-    print("  💡 Double-click any shortcut to launch that mode!")
-    print("=" * 55)
-    print()
-
+    if create_shortcut_ps(name):
+        print(f"✅ Success! Shortcut created on Desktop.")
+        print(f"   Target: {find_pythonw()}")
+        print(f"   Icon:   {ICON_ICO}")
+    else:
+        print("❌ Failed to create shortcut.")
 
 if __name__ == "__main__":
     main()
