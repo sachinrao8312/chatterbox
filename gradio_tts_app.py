@@ -53,24 +53,37 @@ def generate(model, text, audio_prompt_path, exaggeration, temperature, seed_num
     print(f"{'='*60}")
     print(f"CUDA Available: {torch.cuda.is_available()}")
     
+    start_event = None
+    end_event = None
+    
     if torch.cuda.is_available():
-        torch.cuda.synchronize()
-        print(f"✅ GPU Device: {torch.cuda.get_device_name(0)}")
-        print(f"   Pre-Gen Memory Allocated: {torch.cuda.memory_allocated()/1024**2:.2f} MB")
-        print(f"   Model Device: {getattr(model, 'device', 'unknown')}")
-        if hasattr(model, 't3'):
-            print(f"   T3 Model Device: {next(model.t3.parameters()).device}")
-        if hasattr(model, 's3gen'):
-            print(f"   S3Gen Model Device: {next(model.s3gen.parameters()).device}")
+        try:
+            torch.cuda.synchronize()
+            print(f"✅ GPU Device: {torch.cuda.get_device_name(0)}")
+            print(f"   Pre-Gen Memory Allocated: {torch.cuda.memory_allocated()/1024**2:.2f} MB")
+            print(f"   Model Device: {getattr(model, 'device', 'unknown')}")
+            if hasattr(model, 't3'):
+                print(f"   T3 Model Device: {next(model.t3.parameters()).device}")
+            if hasattr(model, 's3gen'):
+                print(f"   S3Gen Model Device: {next(model.s3gen.parameters()).device}")
+        except Exception as e:
+            print(f"⚠️ CUDA diagnostic error: {e}")
+            try:
+                torch.cuda.empty_cache()
+            except:
+                pass
     else:
         print("❌ CUDA IS NOT AVAILABLE! Generation will use CPU (very slow).")
     print(f"{'='*60}")
     
     # GPU timing
     if torch.cuda.is_available():
-        start_event = torch.cuda.Event(enable_timing=True)
-        end_event = torch.cuda.Event(enable_timing=True)
-        start_event.record()
+        try:
+            start_event = torch.cuda.Event(enable_timing=True)
+            end_event = torch.cuda.Event(enable_timing=True)
+            start_event.record()
+        except Exception as e:
+            print(f"   [GPU] Warning: Could not create CUDA events: {e}")
     # -----------------
     
     wav = model.generate(
@@ -86,16 +99,24 @@ def generate(model, text, audio_prompt_path, exaggeration, temperature, seed_num
     
     # --- GPU POST-GENERATION DIAGNOSTICS ---
     if torch.cuda.is_available():
-        end_event.record()
-        torch.cuda.synchronize()
-        gpu_time_ms = start_event.elapsed_time(end_event)
-        print(f"\n{'='*60}")
-        print(f"🚀 CUDA GENERATION COMPLETE (Standard TTS)")
-        print(f"{'='*60}")
-        print(f"   GPU Kernel Time: {gpu_time_ms:.2f} ms")
-        print(f"   Post-Gen Memory: {torch.cuda.memory_allocated()/1024**2:.2f} MB")
-        print(f"   Peak Memory: {torch.cuda.max_memory_allocated()/1024**2:.2f} MB")
-        print(f"{'='*60}\n")
+        try:
+            if end_event is not None:
+                end_event.record()
+                torch.cuda.synchronize()
+                gpu_time_ms = start_event.elapsed_time(end_event)
+                print(f"\n{'='*60}")
+                print(f"🚀 CUDA GENERATION COMPLETE (Standard TTS)")
+                print(f"{'='*60}")
+                print(f"   GPU Kernel Time: {gpu_time_ms:.2f} ms")
+                print(f"   Post-Gen Memory: {torch.cuda.memory_allocated()/1024**2:.2f} MB")
+                print(f"   Peak Memory: {torch.cuda.max_memory_allocated()/1024**2:.2f} MB")
+                print(f"{'='*60}\n")
+        except Exception as e:
+            print(f"   [GPU] Post-generation diagnostic error: {e}")
+            try:
+                torch.cuda.empty_cache()
+            except:
+                pass
     # -----------------
     
     progress(0.9, "Saving...")
